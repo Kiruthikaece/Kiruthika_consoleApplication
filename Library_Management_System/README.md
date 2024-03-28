@@ -28,11 +28,11 @@ To show menus for user
 
 List the books added to the library
 
-![Screenshot 2024-03-28 214026](https://github.com/Kiruthikaece/Kiruthika_consoleApplication/assets/102378821/dafcd071-0c85-4ecc-8e6a-83ea5dfe0b3b)
+![Screenshot 2024-03-28 214428](https://github.com/Kiruthikaece/Kiruthika_consoleApplication/assets/102378821/f3798037-3138-4fce-9f08-d9da2ce9488e)
 
 List the users added to the library
 
-![Screenshot 2024-03-28 214428](https://github.com/Kiruthikaece/Kiruthika_consoleApplication/assets/102378821/f3798037-3138-4fce-9f08-d9da2ce9488e)
+![Screenshot 2024-03-28 214026](https://github.com/Kiruthikaece/Kiruthika_consoleApplication/assets/102378821/dafcd071-0c85-4ecc-8e6a-83ea5dfe0b3b)
 
 List the books borrowed by the user
 
