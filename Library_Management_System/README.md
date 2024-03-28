@@ -25,3 +25,17 @@ To show menus for user
 
 
 ![Screenshot 2024-03-28 214611](https://github.com/Kiruthikaece/Kiruthika_consoleApplication/assets/102378821/83c4f35e-8487-4a57-a1e8-6bd462923783)
+
+List the books added to the library
+
+![Screenshot 2024-03-28 214026](https://github.com/Kiruthikaece/Kiruthika_consoleApplication/assets/102378821/dafcd071-0c85-4ecc-8e6a-83ea5dfe0b3b)
+
+List the users added to the library
+
+![Screenshot 2024-03-28 214428](https://github.com/Kiruthikaece/Kiruthika_consoleApplication/assets/102378821/f3798037-3138-4fce-9f08-d9da2ce9488e)
+
+List the books borrowed by the user
+
+![Screenshot 2024-03-28 214742](https://github.com/Kiruthikaece/Kiruthika_consoleApplication/assets/102378821/0301fe2f-83a4-4fe2-b547-a6f0ac07b18a)
+
+
