@@ -2,6 +2,7 @@
 <%@ page import="com.keerthi.chatapp.headerAction" %>
 <%@ page import="com.keerthi.chatapp.SignUpAction" %>
 <%@ page import="com.keerthi.chatapp.LoginAction" %>
+  <%@ page import="com.keerthi.chatapp.UserWithResponse"%>
 <%@ page import="java.util.List" %>
 <!DOCTYPE html>
 <html>
@@ -123,6 +124,16 @@ body {
     font-size: 9px;
 }
 
+label {
+  background-color: indigo;
+  color: white;
+  padding: 0.5rem;
+  font-family: sans-serif;
+  border-radius: 0.3rem;
+  cursor: pointer;
+  margin-top: 1rem;
+}
+
 img {
     border-radius: 50%;
   }
@@ -138,7 +149,7 @@ int reqUserId = signupAction1 != null ? signupAction1.getId() : 0;
 List<SignUpAction> responseList = l.getGetLoginUserResponse();
 
 headerAction h = new headerAction();
-List<SignUpAction> searchre = h.getSearchResults();
+List<UserWithResponse> searchre = h.getSearchResults();
 if (searchre != null) {
     System.out.println(searchre.size() + "-----");
 }
@@ -150,7 +161,7 @@ if (searchre != null) {
     <img id="notificationIcon" src="../image/notification.png" alt="notify" class="img-card">
     <span id="notificationBadge" class="badge"></span>
 
-    <form action="search" id="searchForm" class="SearchBar ">
+    <form action="search" id="searchForm" class="SearchBar " onsubmit="return handleSearchSubmit(event)">
       <input type="text" name="search" id="searchInput">
     </form>
    
@@ -168,19 +179,31 @@ if (searchre != null) {
     <span class="close">&times;</span>
     <h2>Friends List</h2>
     <table id="resultsTable">
-      <% for (SignUpAction signUp : searchre) { %>
+      <% for (UserWithResponse signUp : searchre) { %>
       <tr>
         <td><%= signUp.getName() %></td>
+         <% if(signUp.getIsResponse()==0 || signUp.getIsResponse()==3) { %>
         <td>
           <input type="button" name="request" value="request"
-            onclick="sendRequest('<%= signUp.getId() %>', this)"
+            onclick="sendRequest('<%= signUp.getId() %>', 1,this)"
             style="width: 100%; margin-left: 40px;">
         </td>
+         <% } %>
+         
+         <% if(signUp.getIsResponse()==1 && reqUserId!=signUp.getId()) {  %>
         <td>
-          <a href="chatpage.jsp">
+          <input type="button" name="requesting" value="requesting"
+            style="width: 100%; margin-left: 40px;">
+        </td>
+         <% } %>
+         
+          <% if(signUp.getIsResponse()==2)  {   %>
+        <td>
+          <a href="chatpage.jsp" >
             <input type="button" value="chat" name="chat" style="width: 100%; margin-left: 40px;">
           </a>
         </td>
+         <% } %>
       </tr>
       <% } %>
     </table>
@@ -189,42 +212,62 @@ if (searchre != null) {
 <% } %>
 
 <!-- The notification Modal -->
-<% if (responseList!=null) { %>
+
 <div id="responseModal" class="modal">
   <div class="modal-content">
     <span class="close">&times;</span>
+    <% if (responseList != null && !responseList.isEmpty()) { %>
     <h2>List</h2>
+  
     <table id="responseTable">
       <% for (SignUpAction responses : responseList) { %>
       <tr>
         <td><%= responses.getName() %></td>
         <td>
           <input type="button" name="Accept" value="Accept"
-            onclick="sendResponse('<%= responses.getId() %>', 2)"
+            onclick="sendResponse('<%= responses.getId() %>', 2,this)"
             style="width: 100%; margin-left: 40px;">
         </td>
         <td>
-            <input type="button" value="Cancel" name="Cancel"
-            onclick="sendResponse('<%= responses.getId() %>', 3)"
+          <input type="button" value="Cancel" name="Cancel"
+            onclick="sendResponse('<%= responses.getId() %>', 3,this)"
             style="width: 100%; margin-left: 40px;">
         </td>
       </tr>
       <% } %>
     </table>
+    <% 
+      } else { 
+    %>
+    <h3>No notifications</h3>
+    <% 
+      } 
+    %>
   </div>
 </div>
-<% } %>
+
 
 
 <div id="userModal" class="modal">
   <div class="modal-content" style="margin: 3% 81%; width: 18%;height: 50%;">
     <span class="close">&times;</span>
-    <h2>List</h2>
-       <div >
-       <%= signupAction1.getName() %>
+    <h2></h2>
+       <div style="height:30px; margin-top:40px;">
+       <%= signupAction1.getName()%> -   <%= signupAction1.getUsername() %>
        </div>
-        <div >
-       <%= signupAction1.getUsername() %>
+       <hr>
+       <div style="height: 40px; margin-top: 35px;">
+       <%= signupAction1.getEmail() %>
+       </div>
+       <hr>
+       <div style="height: 40px; margin-top: 35px;">
+        <input type="file" name="upload-pic" id="upload-pic" hidden>
+        <label class="" for="upload-pic">update profile</label>
+       </div>
+       <hr>
+        <div style="height: 40px;     margin: -57px 149px;">
+        <input type="file" name="logout" id="logout" hidden>
+        <a href="http://localhost:8080/ChatApplication/"><label class="">logout</label></a>
        </div>
   </div>
 </div>
@@ -267,14 +310,14 @@ $(document).ready(function() {
     }
   }
 
-  window.sendRequest = function(receiverId, button) {
+  window.sendRequest = function(receiverId, isResponse,button) {
     $.ajax({
       url: 'sendRequest',
       method: 'POST',
       data: {
         reqUserId: '<%= reqUserId %>',
         resUserId: receiverId,
-        is_response:1
+        isresponse:isResponse
       },
       success: function(response) {
         button.value = 'Requesting...';
@@ -306,7 +349,7 @@ $(document).ready(function() {
     }
   }
 
-  window.sendResponse = function(receiverId, isResponse) {
+  window.sendResponse = function(receiverId, isResponse,button) {
     $.ajax({
       url: 'sendResponse',
       method: 'POST',
@@ -316,6 +359,8 @@ $(document).ready(function() {
         isresponse: isResponse
       },
       success: function(response) {
+    	if(isResponse==2)
+    		button.value="Following";
         console.log("Response sent successfully for user ID: " + receiverId + " with response: " + isResponse);
       },
       error: function(xhr, status, error) {

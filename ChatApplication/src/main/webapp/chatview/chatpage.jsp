@@ -2,6 +2,7 @@
     pageEncoding="UTF-8"%>
     <%@ page import="com.keerthi.chatapp.LoginAction" %>
     <%@ page import="com.keerthi.chatapp.SignUpAction"%>
+    <%@ page import="com.keerthi.chatapp.UserWithResponse"%>
     <%@ page import="com.keerthi.chatapp.headerAction"%>
     <%@ page import="java.util.List"%>
 <!DOCTYPE html>
@@ -114,12 +115,30 @@ body {
 
 
 .vl {
-  border-left: 3px solid lightgray;
-    height: 646px;
+    border-right: 3px solid lightgray;
+    height: 648px;
     position: absolute;
-    left: 30%;
+    left: 6%;
     top: 87px;
+    overflow: auto;
 }
+
+.list-f {
+   position: relative;
+    right: 20px;
+    align-content: center;
+    text-align: center;
+    height: 100px;
+    margin: 29px;
+    color: black;
+    width: 300px;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    border-right: 4px solid #f50057;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    }
+
 
 </style>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -130,12 +149,15 @@ LoginAction l=new LoginAction();
 SignUpAction signupAction1=l.getSignupAction();
 int sender_id = signupAction1 != null ? signupAction1.getId() : 0;
 headerAction h=new headerAction();
-List<SignUpAction> searchre=h.getSearchResults();
+List<UserWithResponse> searchre=h.getSearchResults();
 int receiver_id=0;
+
 if(searchre!=null)
 receiver_id=searchre.get(0).getId();
 else
 System.out.println("No search result");
+
+List<SignUpAction> friendsList=l.getFriendsList();
 %>
 <div class="container">
 <div class="chat-popup" id="myForm">
@@ -148,6 +170,9 @@ System.out.println("No search result");
  
 </div>
 <div class="vl">
+<% for(SignUpAction frd:friendsList) { %>
+<div class="list-f"><%= frd.getName() %></div>
+<% } %>
 </div>
 </div>
 <script>

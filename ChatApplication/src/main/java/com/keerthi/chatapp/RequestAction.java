@@ -12,6 +12,7 @@ public class RequestAction extends ActionSupport{
 	
 	public String execute() throws Exception {
 		boolean addRequest=DatabaseManager.getInstance().addRequestDetails(reqUserId,resUserId,isresponse);
+		System.out.println(isresponse+"*****");
 		if(addRequest) {
 			System.out.println("response added successfully");
 			 return SUCCESS;

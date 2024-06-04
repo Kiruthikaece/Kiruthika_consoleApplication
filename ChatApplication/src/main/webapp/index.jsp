@@ -6,7 +6,7 @@
 <meta charset="UTF-8">
 <title>ChatApp</title>
 <link rel="StyleSheet" href="chatview/Form.css">
-</head>
+</head>      
 <body>
 <form action="login" method="post">
 

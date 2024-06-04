@@ -1,23 +1,21 @@
 package com.keerthi.chatapp;
 
-import java.util.ArrayList;
 import java.util.List;
-import javax.servlet.http.HttpServletRequest;
 import com.keerthi.datalayer.DatabaseManager;
 import com.opensymphony.xwork2.ActionSupport;
-import org.apache.struts2.ServletActionContext;
 
 public class headerAction extends ActionSupport {
     
+    private static int loginUserId;
     private String search;
-   static private List<SignUpAction> searchResults;
+    static private List<UserWithResponse> searchResults;
 
     public String execute() {
-    	
+        setLoginUserId(new LoginAction().getLoginUserId());
         if (search != null) {
-            searchResults = DatabaseManager.getInstance().searchFriends(search);
-            System.out.println(searchResults.size()+".....");
-
+            System.out.println(loginUserId + "loginUserId");
+            searchResults = DatabaseManager.getInstance().searchFriends(search, loginUserId);
+            System.out.println(searchResults.size() + ".....");
             return SUCCESS;
         } else {
             return ERROR;
@@ -32,7 +30,15 @@ public class headerAction extends ActionSupport {
         this.search = search;
     }
 
-    public List<SignUpAction> getSearchResults() {
+    public List<UserWithResponse> getSearchResults() {
         return searchResults;
+    }
+
+    public int getLoginUserId() {
+        return loginUserId;
+    }
+
+    public void setLoginUserId(int loginUserId) {
+        this.loginUserId = loginUserId;
     }
 }

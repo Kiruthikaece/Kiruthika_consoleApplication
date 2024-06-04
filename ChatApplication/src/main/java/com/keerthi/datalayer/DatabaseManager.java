@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.keerthi.chatapp.SignUpAction;
+import com.keerthi.chatapp.UserWithResponse;
 import com.keerthi.chatapp.headerAction;
 
 public class DatabaseManager {
@@ -98,35 +99,43 @@ public class DatabaseManager {
         return false; 
 	}
 
-	public List<SignUpAction> searchFriends(String search) {
-		List<SignUpAction> UserList=new ArrayList<>();
-		System.out.println("name1"+search);
-		 String searchQuery="select * from signup where username like ?";
-		 try(Connection con=DriverManager.getConnection(url,usernamee,passwordd)){
-			 System.out.println("name22");
-			 PreparedStatement stmt=con.prepareStatement(searchQuery);
-			 stmt.setString(1, "%" + search + "%");
-			 ResultSet resultSet=stmt.executeQuery();
-			 while(resultSet.next()) {
-				 SignUpAction signUp=new SignUpAction(
-						 resultSet.getInt("id"),
-						 resultSet.getString("name"),
-						 resultSet.getString("userName"),
-						 resultSet.getString("email"),
-						 resultSet.getString("password")
-						 );
-				 UserList.add(signUp);
-				 System.out.println(resultSet.getString("username")+"namesss");
-			 }
-			 System.out.println("name333"); 
-			 for(SignUpAction x:UserList)
-				 System.out.print(x.getEmail()+"  ");
-			 } catch(Exception e) {
-			   e.printStackTrace();
-		     }
-		 
-		 	return UserList;
-	   }
+	public List<UserWithResponse> searchFriends(String search, int loginUserId) {
+	    List<UserWithResponse> userList = new ArrayList<>();
+	    System.out.println("name1" + search);
+	    String searchQuery = "SELECT s.id, s.name, s.username, s.email, s.password, " +
+                "CASE WHEN r.isresponse IS NULL THEN 0 ELSE r.isresponse END AS isresponse " +
+                "FROM signup s " +
+                "LEFT JOIN reqres r ON (s.id = r.reqUserId OR s.id = r.resUserId) " +
+                "AND (r.reqUserId = ? OR r.resUserId = ?) " +
+                "WHERE s.username LIKE ?";
+	    try (Connection con = DriverManager.getConnection(url, usernamee, passwordd)) {
+	        System.out.println("name22");
+	        PreparedStatement stmt = con.prepareStatement(searchQuery);
+	        stmt.setInt(1, loginUserId);
+	        stmt.setInt(2, loginUserId);
+	        stmt.setString(3, "%" + search + "%");
+	        ResultSet resultSet = stmt.executeQuery();
+	        while (resultSet.next()) {
+	            UserWithResponse user = new UserWithResponse(
+	                resultSet.getInt("id"),
+	                resultSet.getString("name"),
+	                resultSet.getString("username"),
+	                resultSet.getString("email"),
+	                resultSet.getString("password"),
+	                resultSet.getInt("isresponse")
+	            );
+	            userList.add(user);
+	            System.out.println(resultSet.getString("username") + "namesss");
+	        }
+	        System.out.println("name333");
+	        for (UserWithResponse x : userList) {
+	            System.out.print(x.getEmail() + "isresponse"+x.getIsResponse()+"iiiiii");
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	    return userList;
+	}
 
 
 	public SignUpAction getLoginUser(String userName, String password) {
@@ -173,14 +182,16 @@ public class DatabaseManager {
 	    }
 	}
 
-	public boolean addRequestDetails(int reqUserId, int resUserId, int isresponse) throws Exception{
+	public boolean addRequestDetails(int reqUserId, int resUserId, int isResponse) throws Exception{
+		
+		System.out.println(isResponse+"*****");
 		String query="insert into reqres (reqUserId,resUserId,isresponse) values(?,?,?)";
 		
 		Connection con=DriverManager.getConnection(url,usernamee,passwordd);
 		PreparedStatement ps=con.prepareStatement(query);
 		ps.setInt(1,reqUserId);
 		ps.setInt(2,resUserId);
-		ps.setInt(3,isresponse);
+		ps.setInt(3,isResponse);
 		int rows=ps.executeUpdate();
 		return rows>0;
 	}
@@ -189,7 +200,7 @@ public class DatabaseManager {
 		 String query = "SELECT s.id, s.name, s.username, s.email, s.password " +
                  "FROM reqres r " +
                  "JOIN signup s ON r.reqUserId = s.id " +
-                 "WHERE r.resUserId = ? AND r.isresponse = 0";
+                 "WHERE r.resUserId = ? AND r.isresponse = 1";
         
         List<SignUpAction> users = new ArrayList<>();
 
@@ -236,6 +247,39 @@ public class DatabaseManager {
 	        e.printStackTrace();
 	        return false;
 	    }
+	}
+
+	public List<SignUpAction> getFriendsList(int loginUserid) {
+		
+		List<SignUpAction> friends=new ArrayList<>();
+		
+		String query = "SELECT s.id, s.name, s.username, s.email, s.password " +
+                "FROM reqres r " +
+                "JOIN signup s ON r.resUserId = s.id " +
+                "WHERE r.reqUserId = ? AND r.isresponse = 2";
+		 try (Connection con = DriverManager.getConnection(url, usernamee, passwordd)) {
+	            PreparedStatement ps = con.prepareStatement(query);
+	            ps.setInt(1, loginUserid);
+	            ResultSet rs = ps.executeQuery();
+
+	            while (rs.next()) {
+	                SignUpAction user = new SignUpAction();
+	                user.setId(rs.getInt("id"));
+	                user.setName(rs.getString("name"));
+	                user.setUsername(rs.getString("username"));
+	                user.setEmail(rs.getString("email"));
+	                user.setPassword(rs.getString("password"));
+
+	                friends.add(user);
+	            }
+	            for(SignUpAction x:friends)
+	            	System.out.println(x.getName());
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	        }
+
+	        return friends;
+		
 	}
 
 

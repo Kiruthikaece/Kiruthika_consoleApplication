@@ -8,8 +8,10 @@ public class LoginAction extends ActionSupport{
 	
 	private String userName;
 	private String password;
-	static SignUpAction signupAction;
-	static List<SignUpAction> getLoginUserResponse;
+	static  SignUpAction signupAction;
+	static  List<SignUpAction> getLoginUserResponse;
+	static  private int LoginUserId;
+	static  private List<SignUpAction> friendsList;
 	
 	
 
@@ -18,8 +20,9 @@ public class LoginAction extends ActionSupport{
 		if(isValid) {
 		  setSignupAction(DatabaseManager.getInstance().getLoginUser(userName,password));
 		  setLoginUserResponse(DatabaseManager.getInstance().getResponseUser(signupAction.getId()));
-		  System.out.println(signupAction.getId()+"this is correct id ");
-			System.out.println("login success");
+		  setLoginUserId(signupAction.getId());
+		  setFriendsList(DatabaseManager.getInstance().getFriendsList(signupAction.getId()));
+		  System.out.println("login success");
             return SUCCESS;
 		}
 		else {
@@ -55,6 +58,22 @@ public class LoginAction extends ActionSupport{
 
 	public static void setLoginUserResponse(List<SignUpAction> getLoginUserResponse) {
 		LoginAction.getLoginUserResponse = getLoginUserResponse;
+	}
+
+	public static int getLoginUserId() {
+		return LoginUserId;
+	}
+
+	public static void setLoginUserId(int loginUserId) {
+		LoginUserId = loginUserId;
+	}
+
+	public static List<SignUpAction> getFriendsList() {
+		return friendsList;
+	}
+
+	public static void setFriendsList(List<SignUpAction> friendsList) {
+		LoginAction.friendsList = friendsList;
 	}
 }
 
