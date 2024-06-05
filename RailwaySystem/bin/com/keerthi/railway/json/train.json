@@ -1,0 +1,1 @@
+[{"trainNo":2345,"trainName":"Nellai Express","departureTime":"1:00","arrivalTime":"11:00","routes":["chennai","tiruchi","madurai","nellai"],"seats":6,"stopage":4,"fare":120},{"trainNo":5678,"trainName":"muthu nagar","departureTime":"11:30","arrivalTime":"12:30","routes":["chennai","madurai","thoothukudi"],"seats":5,"stopage":3,"fare":120}]
